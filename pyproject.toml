@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "vespa-SPLADE-trial"
+version = "0.1.0"
+description = ""
+authors = ["Satoshi Takatori"]
+# readme = "README.md"
+# packages = [{include = "vespa-SPLADE-trial", from = "."}]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pyvespa = "^0.45.0"
+numpy = "^2.1.3"
+torch = "^2.5.1"
+ipykernel = "^6.29.5"
+jupyter = "^1.1.1"
+transformers = "^4.47.0"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.8.1"
+poethepoet = "^0.27.0"
+
+[tool.ruff]
+extend-include = ["*.ipynb"]
+
+[tool.poe.tasks]
+feed = "python scripts/feeder.py"

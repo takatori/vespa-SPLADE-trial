@@ -1,0 +1,57 @@
+version: '3'
+
+services:
+  workspace:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    init: true
+    environment:
+      - TZ=Asia/Tokyo
+    command: sleep infinity
+    volumes:
+      - .:/workspace:cached
+      - workspace_venv:/workspace/.venv
+      - workspace_bin:/workspace/.bin
+    depends_on:
+      vespa:
+        condition: service_healthy
+    networks:
+      - vespa_network
+  
+  vespa:
+    image: vespaengine/vespa
+    container_name: vespa
+    ports:
+      - "8080:8080"
+      - "19071:19071"
+      - "19092:19092"
+    volumes:
+      - ./vespa-config:/vespa-config
+      - vespa_var_storage:/opt/vespa/var
+      - vespa_log_storage:/opt/vespa/logs
+    networks:
+      - vespa_network
+    healthcheck:
+      test: curl http://localhost:19071/state/v1/health
+      timeout: 10s
+      retries: 3
+      start_period: 40s      
+
+  vispana:
+    image: vispana/vispana:latest
+    container_name: vispana
+    ports:
+      - 4000:4000
+    networks:
+      - vespa_network
+
+networks:
+  vespa_network:
+    driver: bridge
+
+volumes:
+  workspace_venv:
+  workspace_bin:
+  vespa_var_storage:
+  vespa_log_storage:
